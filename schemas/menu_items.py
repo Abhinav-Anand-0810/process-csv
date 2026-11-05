@@ -1,9 +1,13 @@
+"""
+Schema for CSV File data validations
+"""
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class MenuItem(BaseModel):
     """
-    Schema for CSV File data validations
+    Schema for Menu Items
     """
 
     model_config = ConfigDict(str_strip_whitespace=True)

@@ -1,35 +1,49 @@
-import os
+"""
+Utility for reading and writing data to Firestore DB
+"""
 
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 
-from src.schemas import menu_items
-
-RESTAURANT_COLLECTION = os.environ.get("RESTAURANT_COLLECTION")
-MENU_ITEMS_SUBCOLLECTION = os.environ.get("MENU_ITEMS_SUBCOLLECTION")
-DATABASE_ID = os.environ.get("DATABASE_ID")
-db = firestore.Client(database=DATABASE_ID)
+from schemas.menu_items import MenuItem
+from settings import FIRESTORE_DB, MENU_ITEMS_SUBCOLLECTION, RESTAURANT_COLLECTION
 
 
 def check_restaurant_exists(restaurant_id: str) -> bool:
     """
     Checks if a restaurant exists in the database by ID
+
+    Args:
+        restaurant_id: ID of the document in DB
+
+    Returns:
+        True if restaurant exists False otherwise
     """
-    restaurant_ref = db.collection(RESTAURANT_COLLECTION).document(restaurant_id)
+
+    restaurant_ref = FIRESTORE_DB.collection(RESTAURANT_COLLECTION).document(
+        restaurant_id
+    )
     restaurant_snap = restaurant_ref.get()
     return restaurant_snap.exists
 
 
 @firestore.transactional
 def insert_menu_item_transaction(
-    transaction: firestore.Transaction, item: menu_items.MenuItem
+    transaction: firestore.Transaction, item: MenuItem
 ) -> bool:
     """
     Inserts a menu item in a restaurant
+
+    Args:
+        transaction: Firestore Transaction
+        item: Menu Item
+
+    Returns:
+        True if the item is inserted successfully, False otherwise
     """
     # Check for existing item
     menu_item_ref = (
-        db.collection(RESTAURANT_COLLECTION)
+        FIRESTORE_DB.collection(RESTAURANT_COLLECTION)
         .document(item.restaurant_id)
         .collection(MENU_ITEMS_SUBCOLLECTION)
     )
@@ -47,7 +61,7 @@ def insert_menu_item_transaction(
 
     # Insert in DB
     new_item_ref = (
-        db.collection(RESTAURANT_COLLECTION)
+        FIRESTORE_DB.collection(RESTAURANT_COLLECTION)
         .document(item.restaurant_id)
         .collection(MENU_ITEMS_SUBCOLLECTION)
         .document()
@@ -56,9 +70,15 @@ def insert_menu_item_transaction(
     return True
 
 
-def insert_menu_item(item: menu_items.MenuItem) -> bool:
+def insert_menu_item(item: MenuItem) -> bool:
     """
-    Inserts a menu item via a seperate transaction function
+    Creates a DB Transaction and calls the insert_menu_item_transaction() for handeling race conditions.
+
+    Args:
+        item: Menu Item
+
+    Returns:
+        True if the item is inserted successfully, False otherwise
     """
-    transaction = db.transaction()
+    transaction = FIRESTORE_DB.transaction()
     return insert_menu_item_transaction(transaction=transaction, item=item)
