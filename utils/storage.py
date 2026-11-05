@@ -1,5 +1,5 @@
 """
-Utility for reading files from Cloud Storage
+Utilities related to google cloud storage.
 """
 
 import csv

@@ -1,8 +1,5 @@
 FROM python:3.11-slim
 
-# Install system dependencies required for uv or networking
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
-
 # Copy the uv binary from the official Astral image
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
@@ -13,7 +10,7 @@ WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1
 COPY pyproject.toml uv.lock ./
 
-# Install dependencies using uv into system site-packages
+# Install dependencies using uv
 RUN uv sync --frozen --no-dev --no-install-project
 ENV PATH="/app/.venv/bin:$PATH"
 

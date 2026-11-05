@@ -1,16 +1,16 @@
 """
-Utility for publishing results to PubSub
+Utilities related to pub/sub.
 """
 
 import json
 import logging
 
-from settings import BULK_MENU_ITEMS_PUBLISHER, PUBSUB_CLIENT
+from settings import PUBSUB_CLIENT
 
 logger = logging.getLogger(__name__)
 
 
-def publish(data: dict) -> None:
+def publish(topic: str, data: dict) -> None:
     """
     Publishes message on Pub/Sub
 
@@ -19,11 +19,8 @@ def publish(data: dict) -> None:
     """
 
     logger.info("Publishing message to Pub/Sub")
-    message_json = json.dumps({"data": data})
-    message_bytes = message_json.encode("utf-8")
+    message_bytes = json.dumps({"data": data}).encode("utf-8")
 
-    publish_future = PUBSUB_CLIENT.publish(
-        BULK_MENU_ITEMS_PUBLISHER, data=message_bytes
-    )
+    publish_future = PUBSUB_CLIENT.publish(topic=topic, data=message_bytes)
     publish_future.result()
     logger.info("Message Published")
