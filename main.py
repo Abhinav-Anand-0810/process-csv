@@ -16,7 +16,8 @@ from settings import (
     UPLOADED_FILE_NAME,
 )
 from src.service import MenuItemService
-from utils import pub_sub, storage
+from utils.pub_sub import publish
+from utils.storage import get_uploader_email, read_csv
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +34,7 @@ def process_csv() -> None:
 
     try:
         # Process each item
-        csv_rows = storage.read_csv(
-            bucket=UPLOADED_BUCKET_NAME, file=UPLOADED_FILE_NAME
-        )
+        csv_rows = read_csv(bucket=UPLOADED_BUCKET_NAME, file=UPLOADED_FILE_NAME)
         service = MenuItemService()
 
         for row in csv_rows:
@@ -57,10 +56,13 @@ def process_csv() -> None:
                 logger.warning(str(error))
 
         # Publish Final Results
-        pub_sub.publish(
+        publish(
             topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
             data={
                 "message": "Operation Completed",
+                "user_email": get_uploader_email(
+                    bucket=UPLOADED_BUCKET_NAME, file=UPLOADED_FILE_NAME
+                ),
                 "success_count": success_count,
                 "failure_count": failure_count,
             },
@@ -69,7 +71,7 @@ def process_csv() -> None:
 
     except NotFound:
         logger.warning("File Not Found")
-        pub_sub.publish(
+        publish(
             topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
             data={"message": ErrorMessage.FILE_NOT_FOUND.value},
         )
