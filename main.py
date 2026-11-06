@@ -54,7 +54,7 @@ def process_csv() -> None:
                 AlreadyExistsException,
             ) as error:
                 failure_count += 1
-                logger.info(str(error))
+                logger.warning(str(error))
 
         # Publish Final Results
         pub_sub.publish(
@@ -68,7 +68,7 @@ def process_csv() -> None:
         logger.info("Operation Completed Successfully.")
 
     except NotFound:
-        logger.info("File Not Found")
+        logger.warning("File Not Found")
         pub_sub.publish(
             topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
             data={"message": ErrorMessage.FILE_NOT_FOUND.value},

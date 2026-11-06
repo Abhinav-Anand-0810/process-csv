@@ -2,14 +2,14 @@
 Common configurations for the project
 """
 
-import logging
 import os
-import sys
 
+import google.cloud.logging
 from google.cloud import firestore, pubsub_v1, storage
 
 # Logger Config
-logging.basicConfig(stream=sys.stdout, level=logging.INFO, force=True)
+LOGGING_CLIENT = google.cloud.logging.Client()
+LOGGING_CLIENT.setup_logging()
 
 # Environment Variables
 GCP_PROJECT = os.environ.get("GCP_PROJECT")

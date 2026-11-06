@@ -15,6 +15,7 @@ def publish(topic: str, data: dict) -> None:
     Publishes message on Pub/Sub
 
     Args:
+        topic: Pub/Sub topic
         data: Payload to be published on Pub/Sub
     """
 
