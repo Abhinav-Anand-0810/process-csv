@@ -1,13 +1,15 @@
 """
-Service layer handeling business logic
+Service layer handeling business logic related to Menu Items
 """
 
 from google.cloud import firestore
 
 from enums import ErrorMessage
 from exceptions import AlreadyExistsException, NotFoundException
-from schemas.menu_items import MenuItemDTO, MenuItemEntity
-from src.repository import MenuItemRepository
+from mappers.menu_items import MenuItemMapper
+from schemas.dtos import MenuItemDTO
+from src.repository.menu_items import MenuItemRepository
+from src.repository.restaurants import RestaurantRepository
 
 
 class MenuItemService:
@@ -20,14 +22,15 @@ class MenuItemService:
         Initializes the service class
         """
 
-        self.repository = MenuItemRepository()
+        self.menu_items_repo = MenuItemRepository()
+        self.restaurant_repo = RestaurantRepository()
 
-    def create_menu_item(self, item_dto: MenuItemDTO) -> bool:
+    def create_menu_item(self, validated_menu_item: MenuItemDTO) -> bool:
         """
         Creates a DB transaction and executes the menu item insertion workflow to prevent race conditions
 
         Args:
-            item_dto: MenuItemDTO Object
+            validated_menu_item: MenuItemDTO Object
 
         Returns:
             True if the item is inserted successfully
@@ -35,18 +38,18 @@ class MenuItemService:
 
         @firestore.transactional
         def _execute_in_transaction(
-            transaction: firestore.Transaction, dto: MenuItemDTO
+            transaction: firestore.Transaction, validated_menu_item: MenuItemDTO
         ) -> bool:
             # Verify if the restaurant exists
-            if not self.repository.is_restaurant_present(
-                restaurant_id=dto.restaurant_id, transaction=transaction
+            if not self.restaurant_repo.is_restaurant_present(
+                restaurant_id=validated_menu_item.restaurant_id, transaction=transaction
             ):
                 raise NotFoundException(message=ErrorMessage.RESTAURANT_NOT_FOUND.value)
 
             # Verify that the menu item does not already exists
-            if self.repository.is_menu_item_present(
-                restaurant_id=dto.restaurant_id,
-                item_name=dto.name,
+            if self.menu_items_repo.is_menu_item_present(
+                restaurant_id=validated_menu_item.restaurant_id,
+                item_name=validated_menu_item.name,
                 transaction=transaction,
             ):
                 raise AlreadyExistsException(
@@ -54,16 +57,16 @@ class MenuItemService:
                 )
 
             # Build Entity Payload
-            entity = MenuItemEntity.from_dto(item=item_dto)
+            entity = MenuItemMapper.to_entity(dto=validated_menu_item)
             payload = entity.model_dump(by_alias=True)
 
             # Insert the menu Item
-            self.repository.insert_menu_item(
-                restaurant_id=dto.restaurant_id,
+            self.menu_items_repo.insert_menu_item(
+                restaurant_id=validated_menu_item.restaurant_id,
                 payload=payload,
                 transaction=transaction,
             )
             return True
 
-        transaction = self.repository.create_transaction()
-        return _execute_in_transaction(transaction, item_dto)
+        transaction = self.menu_items_repo.create_transaction()
+        return _execute_in_transaction(transaction, validated_menu_item)

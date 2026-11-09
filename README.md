@@ -17,7 +17,7 @@ The CSV file must include at least these columns for each Menu Item:
 - `settings.py`: Environment and application configuration.
 - `enums.py`: Service-level enumerations and constants.
 - `exceptions.py`: Custom exception classes for validation and processing failures.
-- `schemas/menu_items.py`: Schemas used in the project.
+- `schemas/dto.py`: Schemas used in the project.
 - `utils/storage.py`: Utility file for Google Cloud Storage.
 - `utils/pub_sub.py`: Utility file for Google Cloud Pub/Sub.
 - `src/repository.py`: Repository for communication with DB.
@@ -42,5 +42,5 @@ cp .env.template .env
 ### 3. Update the Cloud Function on GCP
 
 ```bash
-gcloud run jobs deploy process-csv --source . --region asia-south2
+gcloud run jobs deploy process-csv --source . --region asia-south2 --env-vars-file=.env
 ```

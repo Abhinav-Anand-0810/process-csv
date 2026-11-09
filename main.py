@@ -9,13 +9,13 @@ from pydantic import ValidationError
 
 from enums import ErrorMessage
 from exceptions import AlreadyExistsException, NotFoundException
-from schemas.menu_items import MenuItemDTO
+from schemas.dtos import MenuItemDTO
 from settings import (
     BULK_MENU_ITEMS_PUBSUB_TOPIC,
     UPLOADED_BUCKET_NAME,
     UPLOADED_FILE_NAME,
 )
-from src.service import MenuItemService
+from src.services.menu_items import MenuItemService
 from utils.pub_sub import publish
 from utils.storage import get_uploader_email, read_csv
 
@@ -35,17 +35,17 @@ def process_csv() -> None:
     try:
         # Process each item
         csv_rows = read_csv(bucket=UPLOADED_BUCKET_NAME, file=UPLOADED_FILE_NAME)
-        service = MenuItemService()
+        menu_item_service = MenuItemService()
 
         for row in csv_rows:
             try:
-                item = MenuItemDTO(**row)
+                validated_menu_item = MenuItemDTO(**row)
 
                 # Insert Item in DB
-                if service.create_menu_item(item_dto=item):
+                if menu_item_service.create_menu_item(
+                    validated_menu_item=validated_menu_item
+                ):
                     success_count += 1
-                else:
-                    failure_count += 1
 
             except (
                 ValidationError,

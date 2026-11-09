@@ -1,17 +1,17 @@
 """
-Repository handling communication with Firestore Database.
+Repository handeling DB communications for for Menu Items.
 """
 
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 
 from enums import FirestoreCollections
-from settings import FIRESTORE_DB
+from settings import FS_CLIENT
 
 
 class MenuItemRepository:
     """
-    Handles Database operations for restaurants and menu items
+    Handles Database operations for menu items
     """
 
     def __init__(self) -> None:
@@ -19,7 +19,7 @@ class MenuItemRepository:
         Initializes the Repository class
         """
 
-        self.db = FIRESTORE_DB
+        self.db = FS_CLIENT
 
     def create_transaction(self) -> firestore.Transaction:
         """
@@ -45,28 +45,7 @@ class MenuItemRepository:
         """
 
         return self.db.collection(
-            f"{FirestoreCollections.RESTAURANT_COLLECTION.value}/{restaurant_id}/{FirestoreCollections.MENU_ITEMS_SUBCOLLECTION.value}"
-        )
-
-    def is_restaurant_present(
-        self, restaurant_id: str, transaction: firestore.Transaction | None = None
-    ) -> bool:
-        """
-        Checks if a restaurant exists
-
-        Args:
-            restaurant_id: ID of the restaurant
-            transaction: Firestore Transaction, defaults to None
-
-        Returns:
-            True if the restaurant exists, False otherwise
-        """
-
-        return (
-            self.db.collection(FirestoreCollections.RESTAURANT_COLLECTION.value)
-            .document(restaurant_id)
-            .get(transaction=transaction)
-            .exists
+            f"{FirestoreCollections.RESTAURANT.value}/{restaurant_id}/{FirestoreCollections.MENU_ITEMS.value}"
         )
 
     def is_menu_item_present(
