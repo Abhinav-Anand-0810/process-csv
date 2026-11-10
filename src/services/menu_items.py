@@ -5,8 +5,8 @@ Service layer handeling business logic related to Menu Items
 from google.cloud.firestore import Transaction, transactional
 
 from exceptions import AlreadyExistsException, NotFoundException
-from mappers.menu_items import MenuItemMapper
-from schemas.dtos import MenuItemDTO
+from src.dtos.menu_items import MenuItemDTO
+from src.mappers.menu_items import MenuItemMapper
 from src.repository.menu_items import MenuItemRepository
 from src.repository.restaurants import RestaurantRepository
 

@@ -5,7 +5,7 @@ Custom Exceptions for the project
 from enums import ErrorMessage
 
 
-class TaskBaseException(Exception):
+class CRJBaseException(Exception):
     """
     Base Exception class for the service
     """
@@ -22,7 +22,7 @@ class TaskBaseException(Exception):
         super().__init__(self.message)
 
 
-class NotFoundException(TaskBaseException):
+class NotFoundException(CRJBaseException):
     """
     Exception for non-existing resource request
     """
@@ -30,7 +30,7 @@ class NotFoundException(TaskBaseException):
     default_error_message = ErrorMessage.NOT_FOUND.value
 
 
-class AlreadyExistsException(TaskBaseException):
+class AlreadyExistsException(CRJBaseException):
     """
     Exception for Already Existing Resource
     """

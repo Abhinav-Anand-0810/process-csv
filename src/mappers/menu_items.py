@@ -2,8 +2,8 @@
 Mappers for Menu Items
 """
 
-from schemas.dtos import MenuItemDTO
-from schemas.entities import MenuItemEntity
+from src.dtos.menu_items import MenuItemDTO
+from src.entities.menu_items import MenuItemEntity
 
 
 class MenuItemMapper:

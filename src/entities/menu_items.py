@@ -2,7 +2,7 @@
 Database Entity Schemas
 """
 
-from schemas.base_entity import BaseEntity
+from src.entities.base_entity import BaseEntity
 
 
 class MenuItemEntity(BaseEntity):

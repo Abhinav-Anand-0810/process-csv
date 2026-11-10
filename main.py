@@ -9,13 +9,13 @@ from pydantic import ValidationError
 
 from enums import ErrorMessage
 from exceptions import AlreadyExistsException, NotFoundException
-from schemas.dtos import MenuItemDTO
 from settings import (
     SEND_NOTIFICATION_TOPIC,
     UPLOADED_BUCKET_NAME,
     UPLOADED_BY,
     UPLOADED_FILE_NAME,
 )
+from src.dtos.menu_items import MenuItemDTO
 from src.services.menu_items import MenuItemService
 from utils.pub_sub import publish
 from utils.storage import read_csv
