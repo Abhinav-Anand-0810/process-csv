@@ -4,7 +4,6 @@ Service layer handeling business logic related to Menu Items
 
 from google.cloud import firestore
 
-from enums import ErrorMessage
 from exceptions import AlreadyExistsException, NotFoundException
 from mappers.menu_items import MenuItemMapper
 from schemas.dtos import MenuItemDTO
@@ -44,7 +43,7 @@ class MenuItemService:
             if not self.restaurant_repo.is_restaurant_present(
                 restaurant_id=validated_menu_item.restaurant_id, transaction=transaction
             ):
-                raise NotFoundException(message=ErrorMessage.RESTAURANT_NOT_FOUND.value)
+                raise NotFoundException(message="Restaurant not found")
 
             # Verify that the menu item does not already exists
             if self.menu_items_repo.is_menu_item_present(
@@ -53,7 +52,7 @@ class MenuItemService:
                 transaction=transaction,
             ):
                 raise AlreadyExistsException(
-                    message=ErrorMessage.MENU_ITEM_ALREADY_EXISTS.value
+                    message=f"Item {validated_menu_item.name} already exists."
                 )
 
             # Build Entity Payload
