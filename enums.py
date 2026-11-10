@@ -23,5 +23,5 @@ class FirestoreCollections(str, Enum):
     Enum for Firestore Collections
     """
 
-    RESTAURANT = "restaurants"
+    RESTAURANTS = "restaurants"
     MENU_ITEMS = "menuItems"

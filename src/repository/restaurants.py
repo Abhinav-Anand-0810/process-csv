@@ -2,7 +2,7 @@
 Repository handeling DB communications for for Menu Items.
 """
 
-from google.cloud import firestore
+from google.cloud.firestore import Transaction
 
 from enums import FirestoreCollections
 from settings import FS_CLIENT
@@ -21,7 +21,7 @@ class RestaurantRepository:
         self.db = FS_CLIENT
 
     def is_restaurant_present(
-        self, restaurant_id: str, transaction: firestore.Transaction | None = None
+        self, restaurant_id: str, transaction: Transaction | None = None
     ) -> bool:
         """
         Checks if a restaurant exists
@@ -35,7 +35,9 @@ class RestaurantRepository:
         """
 
         return (
-            self.db.document(f"{FirestoreCollections.RESTAURANT.value}/{restaurant_id}")
+            self.db.document(
+                f"{FirestoreCollections.RESTAURANTS.value}/{restaurant_id}"
+            )
             .get(transaction=transaction)
             .exists
         )

@@ -2,7 +2,7 @@
 Service layer handeling business logic related to Menu Items
 """
 
-from google.cloud import firestore
+from google.cloud.firestore import Transaction, transactional
 
 from exceptions import AlreadyExistsException, NotFoundException
 from mappers.menu_items import MenuItemMapper
@@ -35,9 +35,9 @@ class MenuItemService:
             True if the item is inserted successfully
         """
 
-        @firestore.transactional
+        @transactional
         def _execute_in_transaction(
-            transaction: firestore.Transaction, validated_menu_item: MenuItemDTO
+            transaction: Transaction, validated_menu_item: MenuItemDTO
         ) -> bool:
             # Verify if the restaurant exists
             if not self.restaurant_repo.is_restaurant_present(

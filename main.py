@@ -61,8 +61,8 @@ def process_csv() -> None:
             topic=SEND_NOTIFICATION_TOPIC,
             data={
                 "user_email": UPLOADED_BY,
-                "subject": f"File {UPLOADED_FILE_NAME} processed.",
-                "body": f"Total Items Updated: {success_count}. Failed to process {failure_count} items.",
+                "subject": "File processed successfully.",
+                "body": f"Uploaded file {UPLOADED_FILE_NAME} was processed successfully. Total Items Updated: {success_count}. Failed to process {failure_count} items.",
             },
         )
         logger.info("Operation Completed Successfully.")

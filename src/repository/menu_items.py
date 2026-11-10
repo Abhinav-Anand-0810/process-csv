@@ -2,7 +2,7 @@
 Repository handeling DB communications for for Menu Items.
 """
 
-from google.cloud import firestore
+from google.cloud.firestore import CollectionReference, Transaction
 from google.cloud.firestore_v1.base_query import FieldFilter
 
 from enums import FirestoreCollections
@@ -21,7 +21,7 @@ class MenuItemRepository:
 
         self.db = FS_CLIENT
 
-    def create_transaction(self) -> firestore.Transaction:
+    def create_transaction(self) -> Transaction:
         """
         Initializes and returns a Firestore transaction
 
@@ -31,9 +31,7 @@ class MenuItemRepository:
 
         return self.db.transaction()
 
-    def _get_menu_items_collection(
-        self, restaurant_id: str
-    ) -> firestore.CollectionReference:
+    def _get_menu_items_collection(self, restaurant_id: str) -> CollectionReference:
         """
         Helper to build the Menu Item subcollection reference
 
@@ -45,14 +43,14 @@ class MenuItemRepository:
         """
 
         return self.db.collection(
-            f"{FirestoreCollections.RESTAURANT.value}/{restaurant_id}/{FirestoreCollections.MENU_ITEMS.value}"
+            f"{FirestoreCollections.RESTAURANTS.value}/{restaurant_id}/{FirestoreCollections.MENU_ITEMS.value}"
         )
 
     def is_menu_item_present(
         self,
         restaurant_id: str,
         item_name: str,
-        transaction: firestore.Transaction | None = None,
+        transaction: Transaction | None = None,
     ) -> bool:
         """
         Checks if a menu item with the same name already exists in the restaurant
@@ -80,7 +78,7 @@ class MenuItemRepository:
         self,
         restaurant_id: str,
         payload: dict,
-        transaction: firestore.Transaction,
+        transaction: Transaction,
     ) -> None:
         """
         Inserts a new menu item in a restaurnat
