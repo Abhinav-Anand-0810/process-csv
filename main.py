@@ -11,7 +11,7 @@ from enums import ErrorMessage
 from exceptions import AlreadyExistsException, NotFoundException
 from schemas.dtos import MenuItemDTO
 from settings import (
-    BULK_MENU_ITEMS_PUBSUB_TOPIC,
+    SEND_NOTIFICATION_TOPIC,
     UPLOADED_BUCKET_NAME,
     UPLOADED_BY,
     UPLOADED_FILE_NAME,
@@ -58,11 +58,11 @@ def process_csv() -> None:
 
         # Publish Final Results
         publish(
-            topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
+            topic=SEND_NOTIFICATION_TOPIC,
             data={
                 "user_email": UPLOADED_BY,
                 "subject": f"File {UPLOADED_FILE_NAME} processed.",
-                "message": f"Total Items Updated: {success_count}. Failed to process {failure_count} items.",
+                "body": f"Total Items Updated: {success_count}. Failed to process {failure_count} items.",
             },
         )
         logger.info("Operation Completed Successfully.")
@@ -70,11 +70,11 @@ def process_csv() -> None:
     except NotFound:
         logger.warning("File Not Found")
         publish(
-            topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
+            topic=SEND_NOTIFICATION_TOPIC,
             data={
                 "user_email": UPLOADED_BY,
                 "subject": ErrorMessage.FILE_NOT_FOUND.value,
-                "message": f"File {UPLOADED_FILE_NAME} does not exists.",
+                "body": f"File {UPLOADED_FILE_NAME} does not exists.",
             },
         )
 

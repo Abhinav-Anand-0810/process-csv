@@ -23,7 +23,7 @@ FS_CLIENT = firestore.Client(database=DATABASE_ID)
 
 # PubSub Config
 PUBSUB_CLIENT = pubsub_v1.PublisherClient()
-BULK_MENU_ITEMS_PUBSUB_TOPIC = PUBSUB_CLIENT.topic_path(
+SEND_NOTIFICATION_TOPIC = PUBSUB_CLIENT.topic_path(
     GCP_PROJECT, SEND_NOTIFICATION_TOPIC_ID
 )
 
