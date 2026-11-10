@@ -13,11 +13,12 @@ from schemas.dtos import MenuItemDTO
 from settings import (
     BULK_MENU_ITEMS_PUBSUB_TOPIC,
     UPLOADED_BUCKET_NAME,
+    UPLOADED_BY,
     UPLOADED_FILE_NAME,
 )
 from src.services.menu_items import MenuItemService
 from utils.pub_sub import publish
-from utils.storage import get_uploader_email, read_csv
+from utils.storage import read_csv
 
 logger = logging.getLogger(__name__)
 
@@ -59,12 +60,9 @@ def process_csv() -> None:
         publish(
             topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
             data={
-                "message": "Operation Completed",
-                "user_email": get_uploader_email(
-                    bucket=UPLOADED_BUCKET_NAME, file=UPLOADED_FILE_NAME
-                ),
-                "success_count": success_count,
-                "failure_count": failure_count,
+                "user_email": UPLOADED_BY,
+                "subject": f"File {UPLOADED_FILE_NAME} processed.",
+                "message": f"Total Items Updated: {success_count}. Failed to process {failure_count} items.",
             },
         )
         logger.info("Operation Completed Successfully.")
@@ -73,7 +71,11 @@ def process_csv() -> None:
         logger.warning("File Not Found")
         publish(
             topic=BULK_MENU_ITEMS_PUBSUB_TOPIC,
-            data={"message": ErrorMessage.FILE_NOT_FOUND.value},
+            data={
+                "user_email": UPLOADED_BY,
+                "subject": ErrorMessage.FILE_NOT_FOUND.value,
+                "message": f"File {UPLOADED_FILE_NAME} does not exists.",
+            },
         )
 
 

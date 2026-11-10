@@ -16,6 +16,7 @@ SEND_NOTIFICATION_TOPIC_ID = os.environ.get("SEND_NOTIFICATION_TOPIC_ID")
 DATABASE_ID = os.environ.get("DATABASE_ID")
 UPLOADED_BUCKET_NAME = os.environ.get("UPLOADED_BUCKET_NAME")
 UPLOADED_FILE_NAME = os.environ.get("UPLOADED_FILE_NAME")
+UPLOADED_BY = os.environ.get("UPLOADED_BY")
 
 # Firestore Config
 FS_CLIENT = firestore.Client(database=DATABASE_ID)
